@@ -94,7 +94,6 @@ struct rockchip_combphy_grfcfg {
 	struct combphy_reg pipe_rxterm_set;
 	struct combphy_reg pipe_txelec_set;
 	struct combphy_reg pipe_txcomp_set;
-	struct combphy_reg pipe_clk_25m;
 	struct combphy_reg pipe_clk_100m;
 	struct combphy_reg pipe_phymode_sel;
 	struct combphy_reg pipe_rate_sel;
@@ -454,21 +453,6 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
 	rate = clk_get_rate(priv->refclk);
 
 	switch (rate) {
-	case REF_CLOCK_24MHz:
-		if (priv->type == PHY_TYPE_USB3 || priv->type == PHY_TYPE_SATA) {
-			/* Set ssc_cnt[9:0]=0101111101 & 31.5KHz. */
-			val = PHYREG15_SSC_CNT_VALUE << PHYREG15_SSC_CNT_SHIFT;
-			rockchip_combphy_updatel(priv, PHYREG15_SSC_CNT_MASK,
-						 val, PHYREG15);
-
-			writel(PHYREG16_SSC_CNT_VALUE, priv->mmio + PHYREG16);
-		}
-		break;
-
-	case REF_CLOCK_25MHz:
-		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_25m, true);
-		break;
-
 	case REF_CLOCK_100MHz:
 		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_100m, true);
 		if (priv->type == PHY_TYPE_PCIE) {
@@ -530,7 +514,6 @@ static const struct rockchip_combphy_grfcfg rk3568_combphy_grfcfgs = {
 	.pipe_rxterm_set	= { 0x0000, 12, 12, 0x00, 0x01 },
 	.pipe_txelec_set	= { 0x0004, 1, 1, 0x00, 0x01 },
 	.pipe_txcomp_set	= { 0x0004, 4, 4, 0x00, 0x01 },
-	.pipe_clk_25m		= { 0x0004, 14, 13, 0x00, 0x01 },
 	.pipe_clk_100m		= { 0x0004, 14, 13, 0x00, 0x02 },
 	.pipe_phymode_sel	= { 0x0008, 1, 1, 0x00, 0x01 },
 	.pipe_rate_sel		= { 0x0008, 2, 2, 0x00, 0x01 },
