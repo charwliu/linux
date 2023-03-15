@@ -246,6 +246,9 @@ $defs:
           Channel specifier required when using OP-TEE transport and
           protocol has a dedicated communication channel.
 
+      assigned-clocks: true
+      assigned-clock-rates: true
+
     required:
       - reg
 
