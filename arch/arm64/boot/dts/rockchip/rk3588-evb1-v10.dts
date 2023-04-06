@@ -836,6 +836,14 @@
 	};
 };
 
+&combphy0_ps {
+	status = "okay";
+};
+
+&sata0 {
+	status = "okay";
+};
+
 &tsadc {
 	status = "okay";
 };
