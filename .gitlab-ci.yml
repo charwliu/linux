@@ -5,6 +5,9 @@ default:
 
 stages:
   - build
+  - test
+  - generate
+  - lava
 
 .build debian package:
   stage: build
@@ -41,7 +44,6 @@ stages:
     - ccache -s
   script:
     - make $DEFCONFIG
-
     - make -j$(nproc) $ADDITIONAL_BUILD_CMD bindeb-pkg
     - mkdir artifacts && dcmd mv ../*.changes artifacts/
   artifacts:
@@ -54,3 +56,43 @@ build arm64 debian package:
     ARCH: arm64
     CROSS_COMPILE: aarch64-linux-gnu-
     ADDITIONAL_BUILD_CMD: KBUILD_IMAGE=arch/arm64/boot/Image
+
+generate tests:
+  image: debian:bookworm-slim
+  stage: generate
+  tags:
+    - lightweight
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_DEPTH: "1"
+  needs:
+    - "build arm64 debian package"
+  script:
+    - mkdir deb
+    - "for x in artifacts/linux-image*.deb ; do dpkg -x ${x} deb ; done"
+    - cp deb/boot/vmlinuz* vmlinuz
+    - tar -f modules.tar.gz  -C deb  -c -z -v lib/modules
+    - mkdir dtbs
+    - cp -r deb/usr/lib/linux-image*/* dtbs
+    - sed -i s,%%KERNEL_BUILD_JOB%%,${CI_JOB_ID},g lava/testjob.yaml
+  artifacts:
+    paths:
+      - vmlinuz*
+      - modules.tar.gz
+      - dtbs
+      - lava/testjob.yaml
+
+lava test:
+  stage: lava
+  tags:
+    - lava-runner
+  script:
+    - submit lava/testjob.yaml
+  needs:
+    - "generate tests"
+  artifacts:
+    when: always
+    paths:
+      - "*"
+    reports:
+      junit: "*.xml"
