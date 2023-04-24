@@ -4,14 +4,14 @@
 
 #include <dt-bindings/pinctrl/rockchip.h>
 #include <dt-bindings/gpio/gpio.h>
-#include "rk3588s.dtsi"
+#include "rk3588s-nanopi6-common.dtsi"
 
 / {
 	model = "NanoPi R6S - RK3588S";
 	compatible = "friendlyarm,nanopi6", "rockchip,rk3588";
 
 	aliases {
-		mmc0 = &sdhci;
+		ethernet0 = &r8125_u25;
 		serial2 = &uart2;
 	};
 
@@ -124,3 +124,35 @@
 	pinctrl-0 = <&uart2m0_xfer>;
 	status = "okay";
 };
+
+&mach {
+	hwrev = <2>;
+	model = "NanoPi R6S";
+};
+
+&pcie2x1l1 {
+	pcie@0,0 {
+		reg = <0x00300000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u25: pcie@0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
+};
+
+&pcie2x1l2 {
+	pcie@0,0 {
+		reg = <0x00400000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u40: pcie@0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
+};
+
