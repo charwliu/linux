@@ -98,6 +98,14 @@
 	};
 };
 
+&combphy0_ps {
+	status = "okay";
+};
+
+&combphy2_psu {
+	status = "okay";
+};
+
 &pcie2x1l1 {
 	reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
 	rockchip,init-delay-ms = <100>;
