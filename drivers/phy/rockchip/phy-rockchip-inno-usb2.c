@@ -1343,7 +1343,7 @@ static int rockchip_usb2phy_probe(struct platform_device *pdev)
 	}
 
 	/* support address_cells=2 */
-	if (reg == 0) {
+	if (of_property_count_u32_elems(np, "reg") > 2 && reg == 0) {
 		if (of_property_read_u32_index(np, "reg", 1, &reg)) {
 			dev_err(dev, "the reg property is not assigned in %pOFn node\n",
 				np);
@@ -1377,8 +1377,7 @@ static int rockchip_usb2phy_probe(struct platform_device *pdev)
 	} while (phy_cfgs[index].reg);
 
 	if (!rphy->phy_cfg) {
-		dev_err(dev, "no phy-config can be matched with %pOFn node\n",
-			np);
+		dev_err(dev, "could not find phy config for reg=0x%08x\n", reg);
 		return -EINVAL;
 	}
 
