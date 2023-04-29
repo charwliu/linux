@@ -120,35 +120,35 @@
 };
 
 &gmac1 {
-    /* Use rgmii-rxid mode to disable rx delay inside Soc */
-    phy-mode = "rgmii-rxid";
-    clock_in_out = "output";
+	/* Use rgmii-rxid mode to disable rx delay inside Soc */
+	phy-mode = "rgmii-rxid";
+	clock_in_out = "output";
 
-    snps,no-vlhash;
-    snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
-    snps,reset-active-low;
-    /* Reset time is 20ms, 100ms for rtl8211f */
-    snps,reset-delays-us = <0 20000 100000>;
+	snps,no-vlhash;
+	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+	/* Reset time is 20ms, 100ms for rtl8211f */
+	snps,reset-delays-us = <0 20000 100000>;
 
-    pinctrl-names = "default";
-    pinctrl-0 = <&gmac1_miim
-             &gmac1_tx_bus2
-             &gmac1_rx_bus2
-             &gmac1_rgmii_clk
-             &gmac1_rgmii_bus>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&gmac1_miim
+		&gmac1_tx_bus2
+		&gmac1_rx_bus2
+		&gmac1_rgmii_clk
+		&gmac1_rgmii_bus>;
 
-    tx_delay = <0x42>;
-    /* rx_delay = <0x4f>; */
+	tx_delay = <0x42>;
+	/* rx_delay = <0x4f>; */
 
-    phy-handle = <&rgmii_phy1>;
-    status = "okay";
+	phy-handle = <&rgmii_phy1>;
+	status = "okay";
 };
 
 &mdio1 {
-    rgmii_phy1: phy@1 {
-        compatible = "ethernet-phy-ieee802.3-c22";
-        reg = <0x1>;
-    };
+	rgmii_phy1: phy@1 {
+	compatible = "ethernet-phy-ieee802.3-c22";
+	reg = <0x1>;
+	};
 };
 
 &pinctrl {
@@ -156,7 +156,7 @@
 		sd_s0_pwr: sd-s0-pwr {
 			rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
-	};  
+	};
 
 	usb {
 		typec5v_pwren: typec5v-pwren {
@@ -167,7 +167,7 @@
 		usbc0_int: usbc0-int {
 		    rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
-	};  
+	};
 };
 
 &sdhci {
@@ -182,10 +182,10 @@
 };
 
 &sdmmc {
-	max-frequency = <150000000>;
+	bus-width = <4>;
 	no-sdio;
 	no-mmc;
-	bus-width = <4>;
+	max-frequency = <150000000>;
 	cap-mmc-highspeed;
 	cap-sd-highspeed;
 	disable-wp;
