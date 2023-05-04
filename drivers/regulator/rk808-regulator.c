@@ -595,6 +595,7 @@ static const struct rk8xx_register_bit rk806_suspend_bits[] = {
 static int rk806_set_suspend_enable(struct regulator_dev *rdev)
 {
 	int rid = rdev_get_id(rdev);
+
 	return regmap_update_bits(rdev->regmap, rk806_suspend_bits[rid].reg,
 				  rk806_suspend_bits[rid].bit,
 				  rk806_suspend_bits[rid].bit);
@@ -603,6 +604,7 @@ static int rk806_set_suspend_enable(struct regulator_dev *rdev)
 static int rk806_set_suspend_disable(struct regulator_dev *rdev)
 {
 	int rid = rdev_get_id(rdev);
+
 	return regmap_update_bits(rdev->regmap, rk806_suspend_bits[rid].reg,
 				  rk806_suspend_bits[rid].bit, 0);
 }
@@ -1736,7 +1738,8 @@ static int rk808_regulator_probe(struct platform_device *pdev)
 static struct platform_driver rk808_regulator_driver = {
 	.probe = rk808_regulator_probe,
 	.driver = {
-		.name = "rk808-regulator"
+		.name = "rk808-regulator",
+		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };
 
