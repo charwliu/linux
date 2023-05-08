@@ -219,5 +219,17 @@
 		interrupts = <RK_PB0 IRQ_TYPE_LEVEL_LOW>;
 		wakeup-source;
 	};
-};
 
+       eeprom: eeprom@53 {
+               compatible = "microchip,24c02", "atmel,24c02";
+               reg = <0x53>;
+               #address-cells = <2>;
+               #size-cells = <0>;
+               pagesize = <16>;
+               size = <256>;
+
+               eui_48: eui-48@fa {
+                   reg = <0xfa 0x06>;
+               };
+       };
+};
