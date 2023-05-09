@@ -427,4 +427,17 @@
 		rockchip,pipe-phy-grf = <&pipe_phy1_grf>;
 		status = "disabled";
 	};
+
+        pcie30phy: phy@fee80000 {
+                compatible = "rockchip,rk3588-pcie3-phy";
+                reg = <0x0 0xfee80000 0x0 0x20000>;
+                #phy-cells = <0>;
+                clocks = <&cru PCLK_PCIE_COMBO_PIPE_PHY>;
+                clock-names = "pclk";
+                resets = <&cru SRST_PCIE30_PHY>;
+                reset-names = "phy";
+                rockchip,pipe-grf = <&php_grf>;
+                rockchip,phy-grf = <&pcie30_phy_grf>;
+                status = "disabled";
+        };
 };
