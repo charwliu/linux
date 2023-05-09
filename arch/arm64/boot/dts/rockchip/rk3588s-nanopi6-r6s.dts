@@ -13,6 +13,7 @@
 	aliases {
 		ethernet0 = &r8125_u25;
 		ethernet1 = &r8125_u40;
+		ethernet2 = &gmac1;
 		serial2 = &uart2;
 	};
 
