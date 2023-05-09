@@ -1475,53 +1475,30 @@ static int rk_gmac_clk_init(struct plat_stmmacenet_data *plat)
 {
 	struct rk_priv_data *bsp_priv = plat->bsp_priv;
 	struct device *dev = &bsp_priv->pdev->dev;
-	int ret;
+	int i, ret;
+	struct {
+		struct clk **ptr;
+		const char *name;
+	} clocks[] = {
+		{ &bsp_priv->mac_clk_rx, "mac_clk_rx" },
+		{ &bsp_priv->mac_clk_tx, "mac_clk_tx" },
+		{ &bsp_priv->aclk_mac, "aclk_mac" },
+		{ &bsp_priv->pclk_mac, "pclk_mac" },
+		{ &bsp_priv->clk_mac, "stmmaceth" },
+		{ &bsp_priv->clk_mac_ref, "clk_mac_ref" },
+		{ &bsp_priv->clk_mac_refout, "clk_mac_refout" },
+		{ &bsp_priv->clk_mac_speed, "clk_mac_speed" },
+	};
 
 	bsp_priv->clk_enabled = false;
 
-	bsp_priv->mac_clk_rx = devm_clk_get(dev, "mac_clk_rx");
-	if (IS_ERR(bsp_priv->mac_clk_rx))
-		dev_err(dev, "cannot get clock %s\n",
-			"mac_clk_rx");
-
-	bsp_priv->mac_clk_tx = devm_clk_get(dev, "mac_clk_tx");
-	if (IS_ERR(bsp_priv->mac_clk_tx))
-		dev_err(dev, "cannot get clock %s\n",
-			"mac_clk_tx");
-
-	bsp_priv->aclk_mac = devm_clk_get(dev, "aclk_mac");
-	if (IS_ERR(bsp_priv->aclk_mac))
-		dev_err(dev, "cannot get clock %s\n",
-			"aclk_mac");
-
-	bsp_priv->pclk_mac = devm_clk_get(dev, "pclk_mac");
-	if (IS_ERR(bsp_priv->pclk_mac))
-		dev_err(dev, "cannot get clock %s\n",
-			"pclk_mac");
-
-	bsp_priv->clk_mac = devm_clk_get(dev, "stmmaceth");
-	if (IS_ERR(bsp_priv->clk_mac))
-		dev_err(dev, "cannot get clock %s\n",
-			"stmmaceth");
-
-	if (bsp_priv->phy_iface == PHY_INTERFACE_MODE_RMII) {
-		bsp_priv->clk_mac_ref = devm_clk_get(dev, "clk_mac_ref");
-		if (IS_ERR(bsp_priv->clk_mac_ref))
-			dev_err(dev, "cannot get clock %s\n",
-				"clk_mac_ref");
-
-		if (!bsp_priv->clock_input) {
-			bsp_priv->clk_mac_refout =
-				devm_clk_get(dev, "clk_mac_refout");
-			if (IS_ERR(bsp_priv->clk_mac_refout))
-				dev_err(dev, "cannot get clock %s\n",
-					"clk_mac_refout");
-		}
+	for (i=0; i < ARRAY_SIZE(clocks); i++) {
+		*clocks[i].ptr = devm_clk_get_optional(dev, clocks[i].name);
+		if (IS_ERR(*clocks[i].ptr))
+			return dev_err_probe(dev, PTR_ERR(*clocks[i].ptr),
+					     "cannot get clock %s\n",
+					     clocks[i].name);
 	}
-
-	bsp_priv->clk_mac_speed = devm_clk_get(dev, "clk_mac_speed");
-	if (IS_ERR(bsp_priv->clk_mac_speed))
-		dev_err(dev, "cannot get clock %s\n", "clk_mac_speed");
 
 	if (bsp_priv->clock_input) {
 		dev_info(dev, "clock input from PHY\n");
@@ -1679,14 +1656,11 @@ static struct rk_priv_data *rk_gmac_setup(struct platform_device *pdev,
 		}
 	}
 
-	bsp_priv->regulator = devm_regulator_get_optional(dev, "phy");
+	bsp_priv->regulator = devm_regulator_get(dev, "phy");
 	if (IS_ERR(bsp_priv->regulator)) {
-		if (PTR_ERR(bsp_priv->regulator) == -EPROBE_DEFER) {
-			dev_err(dev, "phy regulator is not available yet, deferred probing\n");
-			return ERR_PTR(-EPROBE_DEFER);
-		}
-		dev_err(dev, "no regulator found\n");
-		bsp_priv->regulator = NULL;
+		ret = PTR_ERR(bsp_priv->regulator);
+		dev_err_probe(dev, ret, "failed to get phy regulator\n");
+		return ERR_PTR(ret);
 	}
 
 	ret = of_property_read_string(dev->of_node, "clock_in_out", &strings);

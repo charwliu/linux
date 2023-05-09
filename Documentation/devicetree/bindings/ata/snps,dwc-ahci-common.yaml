@@ -31,11 +31,11 @@ properties:
       PM-alive clock, RxOOB detection clock, embedded PHYs reference (Rx/Tx)
       clock, etc.
     minItems: 1
-    maxItems: 4
+    maxItems: 5
 
   clock-names:
     minItems: 1
-    maxItems: 4
+    maxItems: 5
     items:
       oneOf:
         - description: Application APB/AHB/AXI BIU clock
@@ -50,6 +50,8 @@ properties:
           const: rxoob
         - description: SATA Ports reference clock
           const: ref
+        - description: Rockchip RK3588 ASIC clock
+          const: asic
 
   resets:
     description:

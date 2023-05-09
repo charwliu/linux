@@ -634,6 +634,10 @@ static int rk3588_combphy_cfg(struct rockchip_combphy_priv *priv)
 			writel(PHYREG16_SSC_CNT_VALUE, priv->mmio + PHYREG16);
 		}
 		break;
+
+	case REF_CLOCK_25MHz:
+		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_25m, true);
+		break;
 	case REF_CLOCK_100MHz:
 		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_100m, true);
 		if (priv->type == PHY_TYPE_PCIE) {
@@ -691,6 +695,7 @@ static const struct rockchip_combphy_grfcfg rk3588_combphy_grfcfgs = {
 	.pipe_rxterm_set	= { 0x0000, 12, 12, 0x00, 0x01 },
 	.pipe_txelec_set	= { 0x0004, 1, 1, 0x00, 0x01 },
 	.pipe_txcomp_set	= { 0x0004, 4, 4, 0x00, 0x01 },
+	.pipe_clk_25m		= { 0x0004, 14, 13, 0x00, 0x01 },
 	.pipe_clk_100m		= { 0x0004, 14, 13, 0x00, 0x02 },
 	.pipe_rxterm_sel	= { 0x0008, 8, 8, 0x00, 0x01 },
 	.pipe_txelec_sel	= { 0x0008, 12, 12, 0x00, 0x01 },
