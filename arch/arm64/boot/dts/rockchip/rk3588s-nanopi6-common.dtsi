@@ -16,6 +16,7 @@
 	aliases {
 		mmc0 = &sdmmc;
 		mmc1 = &sdhci;
+		mmc2 = &sdio;
 		i2c0 = &i2c0;
 		i2c1 = &i2c1;
 		i2c2 = &i2c2;
@@ -388,25 +389,25 @@
 };
 
 &usbdp_phy0_u3 {
-    status = "okay";
+	status = "okay";
 };  
     
 &usbdrd3_0 {
-    status = "okay";
+	status = "okay";
 };
 
 &usbdrd_dwc3_0 {
-    dr_mode = "otg";
-    extcon = <&u2phy0>;
-    status = "okay";
+	dr_mode = "otg";
+	extcon = <&u2phy0>;
+	status = "okay";
 };
 
 &usbhost3_0 {
-    status = "disabled";
+	status = "disabled";
 };
 
 &usbhost_dwc3_0 {
-    status = "disabled";
+	status = "disabled";
 };
 
 
