@@ -21,6 +21,20 @@
 		stdout-path = "serial2:1500000n8";
 	};
 
+        gpio_keys: gpio-keys {
+                compatible = "gpio-keys";
+                pinctrl-names = "default";
+                pinctrl-0 = <&key1_pin>;
+
+                button_1 {
+                        debounce-interval = <50>;
+                        gpios = <&gpio1 RK_PC0 GPIO_ACTIVE_LOW>;
+                        label = "K1";
+                        linux,code = <BTN_1>;
+                        wakeup-source;
+                };
+        };
+
 	gpio_leds: gpio-leds {
 		compatible = "gpio-leds";
 
@@ -53,52 +67,19 @@
 			pinctrl-0 = <&lan2_led_pin>;
 		};
 	};
-};
 
-&pinctrl {
-	gpio-leds {
-		sys_led_pin: sys-led-pin {
-			rockchip,pins =
-				<1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
 
-		wan_led_pin: wan-led-pin {
-			rockchip,pins =
-				<1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		lan1_led_pin: lan1-led-pin {
-			rockchip,pins =
-				<1 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		lan2_led_pin: lan2-led-pin {
-			rockchip,pins =
-				<1 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
-	rtl8211f {
-		rtl8211f_rst: rtl8211f-rst {
-			rockchip,pins = <3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-};
-
-&sdhci {
-	bus-width = <8>;
-	no-sdio;
-	no-sd;
-	non-removable;
-	max-frequency = <200000000>;
-	mmc-hs400-1_8v;
-	mmc-hs400-enhanced-strobe;
-	status = "okay";
-};
-
-&uart2 {
-	pinctrl-0 = <&uart2m0_xfer>;
-	status = "okay";
+        vcc5v0_host_20: vcc5v0-host-20 {
+                compatible = "regulator-fixed";
+                enable-active-high;
+                gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&vcc5v0_host20_en>;
+                regulator-name = "vcc5v0_host_20";
+                regulator-min-microvolt = <5000000>;
+                regulator-max-microvolt = <5000000>;
+                vin-supply = <&vcc5v0_usb>;
+        };
 };
 
 &mach {
@@ -133,3 +114,80 @@
 	};
 };
 
+&pinctrl {
+        gpio-key {
+                key1_pin: key1-pin {
+                        rockchip,pins = <1 RK_PC0 RK_FUNC_GPIO &pcfg_pull_up>;
+                };
+        };
+
+	gpio-leds {
+		sys_led_pin: sys-led-pin {
+			rockchip,pins =
+				<1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		wan_led_pin: wan-led-pin {
+			rockchip,pins =
+				<1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		lan1_led_pin: lan1-led-pin {
+			rockchip,pins =
+				<1 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		lan2_led_pin: lan2-led-pin {
+			rockchip,pins =
+				<1 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+        usb {
+                vcc5v0_host20_en: vcc5v0-host20-en {
+                        rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+                };
+        };
+};
+
+&i2c6 {
+        clock-frequency = <200000>;
+        status = "okay";
+
+        eeprom@53 {
+                compatible = "microchip,24c02", "atmel,24c02";
+                reg = <0x53>;
+                #address-cells = <2>;
+                #size-cells = <0>;
+                pagesize = <16>;
+                size = <256>;
+                vcc-supply = <&vcc_1v8_s3>;
+
+                eui_48: eui-48@fa {
+                        reg = <0xfa 0x06>;
+                };
+        };
+};
+
+&u2phy0 {
+        status = "okay";
+};
+
+&u2phy0_otg {
+        phy-supply = <&vbus5v0_typec>;
+        status = "okay";
+};
+
+&u2phy2 {
+        status = "okay";
+};
+
+&u2phy2_host {
+        phy-supply = <&vcc5v0_host_20>;
+        status = "okay";
+};
+
+&uart2 {
+       pinctrl-0 = <&uart2m0_xfer>;
+       status = "okay";
+};
