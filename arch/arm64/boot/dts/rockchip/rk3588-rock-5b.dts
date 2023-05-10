@@ -165,6 +165,18 @@
 	status = "okay";
 };
 
+&tsadc {
+    status = "okay";
+}; 
+
+&u2phy0 {
+    status = "okay";
+};
+    
+&u2phy0_otg {
+    status = "okay";
+};
+
 &u2phy2_host {
 	/* connected to USB hub, which is powered by vcc5v0_sys */
 	phy-supply = <&vcc5v0_sys>;
@@ -199,6 +211,29 @@
 &usb_host1_ohci {
 	status = "okay";
 };
+
+&usbdp_phy0_u3 {
+    status = "okay";
+};  
+    
+&usbdrd3_0 {
+    status = "okay";
+};
+
+&usbdrd_dwc3_0 {
+    dr_mode = "otg";
+    extcon = <&u2phy0>;
+    status = "okay";
+};
+
+&usbhost3_0 {
+    status = "disabled";
+};
+
+&usbhost_dwc3_0 {
+    status = "disabled";
+};
+
 
 &pinctrl {
 	hym8563 {
