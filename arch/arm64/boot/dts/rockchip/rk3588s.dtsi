@@ -1212,25 +1212,6 @@
 		status = "disabled";
 	};
 
-	rockchip_suspend: rockchip-suspend {
-		compatible = "rockchip,pm-rk3588";
-		status = "disabled";
-		rockchip,sleep-debug-en = <0>;
-		rockchip,sleep-mode-config = <
-			(0
-			| RKPM_SLP_ARMOFF_LOGOFF
-			| RKPM_SLP_PMU_PMUALIVE_32K
-			| RKPM_SLP_PMU_DIS_OSC
-			| RKPM_SLP_32K_EXT
-			)
-		>;
-		rockchip,wakeup-config = <
-			(0
-			| RKPM_GPIO_WKUP_EN
-			)
-		>;
-	};
-
 	rockchip_system_monitor: rockchip-system-monitor {
 		compatible = "rockchip,system-monitor";
 
@@ -1843,7 +1824,7 @@
 	vo0_grf: syscon@fd5a6000 {
 		compatible = "rockchip,rk3588-vo-grf", "syscon";
 		reg = <0x0 0xfd5a6000 0x0 0x2000>;
-		clocks = <&pclk_vo0_grf>;
+		clocks = <&cru PCLK_VO0GRF>;
 	};
 
 	vo1_grf: syscon@fd5a8000 {
