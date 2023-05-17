@@ -150,7 +150,7 @@
 		};
 
 		regulators {
-			vdd_gpu_s0: vdd_gpu_mem_s0: dcdc_reg1 {
+			vdd_gpu_s0: vdd_gpu_mem_s0: dcdc-reg1 {
                                 regulator-boot-on;
                                 regulator-min-microvolt = <550000>;
                                 regulator-max-microvolt = <950000>;
@@ -162,7 +162,7 @@
                                 };
                         };
 
-                        vdd_cpu_lit_s0: vdd_cpu_lit_mem_s0: dcdc_reg2 {
+                        vdd_cpu_lit_s0: vdd_cpu_lit_mem_s0: dcdc-reg2 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <550000>;
@@ -174,7 +174,7 @@
                                 };
                         };
 
-                        vdd_log_s0: dcdc_reg3 {
+                        vdd_log_s0: dcdc-reg3 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <675000>;
@@ -187,7 +187,7 @@
                                 };
                         };
 
-			vdd_vdenc_s0: vdd_vdenc_mem_s0: dcdc_reg4 {
+			vdd_vdenc_s0: vdd_vdenc_mem_s0: dcdc-reg4 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <550000>;
@@ -200,7 +200,7 @@
                                 };
                         };
 
-                        vdd_ddr_s0: dcdc_reg5 {
+                        vdd_ddr_s0: dcdc-reg5 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <675000>;
@@ -213,7 +213,7 @@
                                 };
                         };
 
-                        vdd2_ddr_s3: dcdc_reg6 {
+                        vdd2_ddr_s3: dcdc-reg6 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-name = "vdd2_ddr_s3";
@@ -247,7 +247,7 @@
 				};
 			};
 
-			vddq_ddr_s0: dcdc_reg9 {
+			vddq_ddr_s0: dcdc-reg9 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-name = "vddq_ddr_s0";
@@ -256,7 +256,7 @@
                                 };
                         };
 
-                        vcc_1v8_s3: dcdc_reg10 {
+                        vcc_1v8_s3: dcdc-reg10 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <1800000>;
@@ -268,7 +268,7 @@
                                 };
                         };
 
-                        avcc_1v8_s0: pldo_reg1 {
+                        avcc_1v8_s0: pldo-reg1 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <1800000>;
@@ -279,7 +279,7 @@
                                 };
                         };
 
-                        vcc_1v8_s0: pldo_reg2 {
+                        vcc_1v8_s0: pldo-reg2 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <1800000>;
@@ -291,7 +291,7 @@
                                 };
                         };
 
-			avdd_1v2_s0: pldo_reg3 {
+			avdd_1v2_s0: pldo-reg3 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <1200000>;
@@ -326,7 +326,7 @@
 				};
 			};
 
-                        pldo6_s3: pldo_reg6 {
+                        pldo6_s3: pldo-reg6 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <1800000>;
@@ -338,7 +338,7 @@
                                 };
                         };
 
-                        vdd_0v75_s3: nldo_reg1 {
+                        vdd_0v75_s3: nldo-reg1 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <750000>;
@@ -350,7 +350,7 @@
                                 };
                         };
 
-                        vdd_ddr_pll_s0: nldo_reg2 {
+                        vdd_ddr_pll_s0: nldo-reg2 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <850000>;
@@ -362,7 +362,7 @@
                                 };
                         };
 
-                        avdd_0v75_s0: nldo_reg3 {
+                        avdd_0v75_s0: nldo-reg3 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <837500>;
@@ -373,7 +373,7 @@
                                 };
                         };
 
-                        vdd_0v85_s0: nldo_reg4 {
+                        vdd_0v85_s0: nldo-reg4 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <850000>;
@@ -384,7 +384,7 @@
                                 };
                         };
 
-                        vdd_0v75_s0: nldo_reg5 {
+                        vdd_0v75_s0: nldo-reg5 {
                                 regulator-always-on;
                                 regulator-boot-on;
                                 regulator-min-microvolt = <750000>;
