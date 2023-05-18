@@ -91,6 +91,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-radxa-e25.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-rock-3a.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-edgeble-neu6a-io.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-evb1-v10.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-nanopi6-rev01.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-nanopi6-rev02.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-nanopi6-rev03.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-nanopi6-rev04.dtb

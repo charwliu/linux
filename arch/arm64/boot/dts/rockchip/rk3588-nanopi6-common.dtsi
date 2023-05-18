@@ -154,6 +154,11 @@
 		vin-supply = <&vcc5v0_usb>;
 	};
 
+	pwm_backlight: pwm-backlight {
+		status = "disabled";
+		compatible = "pwm-backlight";
+	};
+
 	test-power {
 		status = "okay";
 	};
