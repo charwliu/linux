@@ -40,6 +40,11 @@ typedef struct {
 	__u8 b[16];
 } guid_t;
 
+// Change the shell of the uuid_t structure through the macro definition before it is defined
+#ifdef __APPLE__
+    #define uuid_t compat_uuid_t
+#endif
+
 typedef struct {
 	__u8 b[16];
 } uuid_t;
