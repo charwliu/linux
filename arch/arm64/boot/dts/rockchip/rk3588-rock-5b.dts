@@ -810,6 +810,7 @@
 	status = "okay";
 };
 
+<<<<<<< HEAD
 &usbdp_phy0 {
 	orientation-switch;
 	mode-switch;
@@ -837,6 +838,8 @@
 	status = "okay";
 };
 
+=======
+>>>>>>> 3732fc2ff869 (arm64: dts: rockchip: rk3588-rock5b: add lower USB3 port)
 &usb_host0_ehci {
 	status = "okay";
 };
