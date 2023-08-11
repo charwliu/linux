@@ -5,7 +5,6 @@
  */
 
 #include <linux/acpi.h>
-#include <linux/aer.h>
 #include <linux/async.h>
 #include <linux/blkdev.h>
 #include <linux/blk-mq.h>
@@ -969,7 +968,7 @@ static __always_inline void nvme_pci_unmap_rq(struct request *req)
 	        struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
 
 		dma_unmap_page(dev->dev, iod->meta_dma,
-			       rq_integrity_vec(req)->bv_len, rq_data_dir(req));
+			       rq_integrity_vec(req)->bv_len, rq_dma_dir(req));
 	}
 
 	if (blk_rq_nr_phys_segments(req))
@@ -2535,7 +2534,6 @@ static int nvme_pci_enable(struct nvme_dev *dev)
 
 	nvme_map_cmb(dev);
 
-	pci_enable_pcie_error_reporting(pdev);
 	pci_save_state(pdev);
 
 	result = nvme_pci_configure_admin_queue(dev);
@@ -2600,10 +2598,8 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
 	nvme_suspend_io_queues(dev);
 	nvme_suspend_queue(dev, 0);
 	pci_free_irq_vectors(pdev);
-	if (pci_is_enabled(pdev)) {
-		pci_disable_pcie_error_reporting(pdev);
+	if (pci_is_enabled(pdev))
 		pci_disable_device(pdev);
-	}
 	nvme_reap_pending_cqes(dev);
 
 	nvme_cancel_tagset(&dev->ctrl);

@@ -42,7 +42,6 @@ struct at91_pinctrl_mux_ops;
  * @next: bank sharing same clock
  * @pioc_hwirq: PIO bank interrupt identifier on AIC
  * @pioc_virq: PIO bank Linux virtual interrupt
- * @pioc_idx: PIO bank index
  * @regbase: PIO bank virtual address
  * @clock: associated clock
  * @ops: at91 pinctrl mux ops
@@ -56,7 +55,6 @@ struct at91_gpio_chip {
 	struct at91_gpio_chip	*next;
 	int			pioc_hwirq;
 	int			pioc_virq;
-	int			pioc_idx;
 	void __iomem		*regbase;
 	struct clk		*clock;
 	const struct at91_pinctrl_mux_ops *ops;
@@ -1304,9 +1302,8 @@ static int at91_pinctrl_probe_dt(struct platform_device *pdev,
 	if (!np)
 		return -ENODEV;
 
-	info->dev = &pdev->dev;
-	info->ops = (const struct at91_pinctrl_mux_ops *)
-		of_match_device(at91_pinctrl_of_match, &pdev->dev)->data;
+	info->dev = dev;
+	info->ops = of_device_get_match_data(dev);
 	at91_pinctrl_child_count(info, np);
 
 	/*
@@ -1325,35 +1322,31 @@ static int at91_pinctrl_probe_dt(struct platform_device *pdev,
 	if (ret)
 		return ret;
 
-	dev_dbg(&pdev->dev, "nmux = %d\n", info->nmux);
+	dev_dbg(dev, "nmux = %d\n", info->nmux);
 
-	dev_dbg(&pdev->dev, "mux-mask\n");
+	dev_dbg(dev, "mux-mask\n");
 	tmp = info->mux_mask;
 	for (i = 0; i < gpio_banks; i++) {
 		for (j = 0; j < info->nmux; j++, tmp++) {
-			dev_dbg(&pdev->dev, "%d:%d\t0x%x\n", i, j, tmp[0]);
+			dev_dbg(dev, "%d:%d\t0x%x\n", i, j, tmp[0]);
 		}
 	}
 
-	dev_dbg(&pdev->dev, "nfunctions = %d\n", info->nfunctions);
-	dev_dbg(&pdev->dev, "ngroups = %d\n", info->ngroups);
-	info->functions = devm_kcalloc(&pdev->dev,
-					info->nfunctions,
-					sizeof(struct at91_pmx_func),
-					GFP_KERNEL);
+	dev_dbg(dev, "nfunctions = %d\n", info->nfunctions);
+	dev_dbg(dev, "ngroups = %d\n", info->ngroups);
+	info->functions = devm_kcalloc(dev, info->nfunctions, sizeof(*info->functions),
+				       GFP_KERNEL);
 	if (!info->functions)
 		return -ENOMEM;
 
-	info->groups = devm_kcalloc(&pdev->dev,
-					info->ngroups,
-					sizeof(struct at91_pin_group),
-					GFP_KERNEL);
+	info->groups = devm_kcalloc(dev, info->ngroups, sizeof(*info->groups),
+				    GFP_KERNEL);
 	if (!info->groups)
 		return -ENOMEM;
 
-	dev_dbg(&pdev->dev, "nbanks = %d\n", gpio_banks);
-	dev_dbg(&pdev->dev, "nfunctions = %d\n", info->nfunctions);
-	dev_dbg(&pdev->dev, "ngroups = %d\n", info->ngroups);
+	dev_dbg(dev, "nbanks = %d\n", gpio_banks);
+	dev_dbg(dev, "nfunctions = %d\n", info->nfunctions);
+	dev_dbg(dev, "ngroups = %d\n", info->ngroups);
 
 	i = 0;
 
@@ -1377,7 +1370,7 @@ static int at91_pinctrl_probe(struct platform_device *pdev)
 	struct pinctrl_pin_desc *pdesc;
 	int ret, i, j, k;
 
-	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+	info = devm_kzalloc(dev, sizeof(*info), GFP_KERNEL);
 	if (!info)
 		return -ENOMEM;
 
@@ -1385,13 +1378,10 @@ static int at91_pinctrl_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	at91_pinctrl_desc.name = dev_name(&pdev->dev);
+	at91_pinctrl_desc.name = dev_name(dev);
 	at91_pinctrl_desc.npins = gpio_banks * MAX_NB_GPIO_PER_BANK;
 	at91_pinctrl_desc.pins = pdesc =
-		devm_kcalloc(&pdev->dev,
-			     at91_pinctrl_desc.npins, sizeof(*pdesc),
-			     GFP_KERNEL);
-
+		devm_kcalloc(dev, at91_pinctrl_desc.npins, sizeof(*pdesc), GFP_KERNEL);
 	if (!at91_pinctrl_desc.pins)
 		return -ENOMEM;
 
@@ -1414,8 +1404,7 @@ static int at91_pinctrl_probe(struct platform_device *pdev)
 	}
 
 	platform_set_drvdata(pdev, info);
-	info->pctl = devm_pinctrl_register(&pdev->dev, &at91_pinctrl_desc,
-					   info);
+	info->pctl = devm_pinctrl_register(dev, &at91_pinctrl_desc, info);
 	if (IS_ERR(info->pctl))
 		return dev_err_probe(dev, PTR_ERR(info->pctl), "could not register AT91 pinctrl driver\n");
 
@@ -1424,7 +1413,7 @@ static int at91_pinctrl_probe(struct platform_device *pdev)
 		if (gpio_chips[i])
 			pinctrl_add_gpio_range(info->pctl, &gpio_chips[i]->range);
 
-	dev_info(&pdev->dev, "initialized AT91 pinctrl driver\n");
+	dev_info(dev, "initialized AT91 pinctrl driver\n");
 
 	return 0;
 }
@@ -1535,6 +1524,20 @@ static void at91_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 #define at91_gpio_dbg_show	NULL
 #endif
 
+static int gpio_irq_request_resources(struct irq_data *d)
+{
+	struct at91_gpio_chip *at91_gpio = irq_data_get_irq_chip_data(d);
+
+	return gpiochip_lock_as_irq(&at91_gpio->chip, irqd_to_hwirq(d));
+}
+
+static void gpio_irq_release_resources(struct irq_data *d)
+{
+	struct at91_gpio_chip *at91_gpio = irq_data_get_irq_chip_data(d);
+
+	gpiochip_unlock_as_irq(&at91_gpio->chip, irqd_to_hwirq(d));
+}
+
 /* Several AIC controller irqs are dispatched through this GPIO handler.
  * To use any AT91_PIN_* as an externally triggered IRQ, first call
  * at91_set_gpio_input() then maybe enable its glitch filter.
@@ -1554,6 +1557,9 @@ static void gpio_irq_mask(struct irq_data *d)
 	struct at91_gpio_chip *at91_gpio = irq_data_get_irq_chip_data(d);
 	void __iomem	*pio = at91_gpio->regbase;
 	unsigned	mask = 1 << d->hwirq;
+	unsigned        gpio = irqd_to_hwirq(d);
+
+	gpiochip_disable_irq(&at91_gpio->chip, gpio);
 
 	if (pio)
 		writel_relaxed(mask, pio + PIO_IDR);
@@ -1564,6 +1570,9 @@ static void gpio_irq_unmask(struct irq_data *d)
 	struct at91_gpio_chip *at91_gpio = irq_data_get_irq_chip_data(d);
 	void __iomem	*pio = at91_gpio->regbase;
 	unsigned	mask = 1 << d->hwirq;
+	unsigned        gpio = irqd_to_hwirq(d);
+
+	gpiochip_enable_irq(&at91_gpio->chip, gpio);
 
 	if (pio)
 		writel_relaxed(mask, pio + PIO_IER);
@@ -1715,6 +1724,7 @@ static void gpio_irq_handler(struct irq_desc *desc)
 static int at91_gpio_of_irq_setup(struct platform_device *pdev,
 				  struct at91_gpio_chip *at91_gpio)
 {
+	struct device		*dev = &pdev->dev;
 	struct gpio_chip	*gpiochip_prev = NULL;
 	struct at91_gpio_chip   *prev = NULL;
 	struct irq_data		*d = irq_get_irq_data(at91_gpio->pioc_virq);
@@ -1722,20 +1732,22 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
 	struct gpio_irq_chip	*girq;
 	int i;
 
-	gpio_irqchip = devm_kzalloc(&pdev->dev, sizeof(*gpio_irqchip),
-				    GFP_KERNEL);
+	gpio_irqchip = devm_kzalloc(dev, sizeof(*gpio_irqchip), GFP_KERNEL);
 	if (!gpio_irqchip)
 		return -ENOMEM;
 
 	at91_gpio->pioc_hwirq = irqd_to_hwirq(d);
 
 	gpio_irqchip->name = "GPIO";
+	gpio_irqchip->irq_request_resources = gpio_irq_request_resources;
+	gpio_irqchip->irq_release_resources = gpio_irq_release_resources;
 	gpio_irqchip->irq_ack = gpio_irq_ack;
 	gpio_irqchip->irq_disable = gpio_irq_mask;
 	gpio_irqchip->irq_mask = gpio_irq_mask;
 	gpio_irqchip->irq_unmask = gpio_irq_unmask;
 	gpio_irqchip->irq_set_wake = pm_ptr(gpio_irq_set_wake);
 	gpio_irqchip->irq_set_type = at91_gpio->ops->irq_type;
+	gpio_irqchip->flags = IRQCHIP_IMMUTABLE;
 
 	/* Disable irqs of this PIO controller */
 	writel_relaxed(~0, at91_gpio->regbase + PIO_IDR);
@@ -1746,7 +1758,7 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
 	 * interrupt.
 	 */
 	girq = &at91_gpio->chip.irq;
-	girq->chip = gpio_irqchip;
+	gpio_irq_chip_set_chip(girq, gpio_irqchip);
 	girq->default_type = IRQ_TYPE_NONE;
 	girq->handler = handle_edge_irq;
 
@@ -1759,7 +1771,7 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
 	if (!gpiochip_prev) {
 		girq->parent_handler = gpio_irq_handler;
 		girq->num_parents = 1;
-		girq->parents = devm_kcalloc(&pdev->dev, 1,
+		girq->parents = devm_kcalloc(dev, girq->num_parents,
 					     sizeof(*girq->parents),
 					     GFP_KERNEL);
 		if (!girq->parents)
@@ -1825,7 +1837,7 @@ static int at91_gpio_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	at91_chip = devm_kzalloc(&pdev->dev, sizeof(*at91_chip), GFP_KERNEL);
+	at91_chip = devm_kzalloc(dev, sizeof(*at91_chip), GFP_KERNEL);
 	if (!at91_chip)
 		return -ENOMEM;
 
@@ -1833,12 +1845,10 @@ static int at91_gpio_probe(struct platform_device *pdev)
 	if (IS_ERR(at91_chip->regbase))
 		return PTR_ERR(at91_chip->regbase);
 
-	at91_chip->ops = (const struct at91_pinctrl_mux_ops *)
-		of_match_device(at91_gpio_of_match, &pdev->dev)->data;
+	at91_chip->ops = of_device_get_match_data(dev);
 	at91_chip->pioc_virq = irq;
-	at91_chip->pioc_idx = alias_idx;
 
-	at91_chip->clock = devm_clk_get_enabled(&pdev->dev, NULL);
+	at91_chip->clock = devm_clk_get_enabled(dev, NULL);
 	if (IS_ERR(at91_chip->clock))
 		return dev_err_probe(dev, PTR_ERR(at91_chip->clock), "failed to get clock, ignoring.\n");
 
@@ -1846,8 +1856,8 @@ static int at91_gpio_probe(struct platform_device *pdev)
 	at91_chip->id = alias_idx;
 
 	chip = &at91_chip->chip;
-	chip->label = dev_name(&pdev->dev);
-	chip->parent = &pdev->dev;
+	chip->label = dev_name(dev);
+	chip->parent = dev;
 	chip->owner = THIS_MODULE;
 	chip->base = alias_idx * MAX_NB_GPIO_PER_BANK;
 
@@ -1888,7 +1898,7 @@ static int at91_gpio_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, at91_chip);
 	gpio_banks = max(gpio_banks, alias_idx + 1);
 
-	dev_info(&pdev->dev, "at address %p\n", at91_chip->regbase);
+	dev_info(dev, "at address %p\n", at91_chip->regbase);
 
 	return 0;
 }

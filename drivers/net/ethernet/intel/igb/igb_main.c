@@ -28,7 +28,6 @@
 #include <linux/tcp.h>
 #include <linux/sctp.h>
 #include <linux/if_ether.h>
-#include <linux/aer.h>
 #include <linux/prefetch.h>
 #include <linux/bpf.h>
 #include <linux/bpf_trace.h>
@@ -9585,6 +9584,11 @@ static pci_ers_result_t igb_io_error_detected(struct pci_dev *pdev,
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct igb_adapter *adapter = netdev_priv(netdev);
+
+	if (state == pci_channel_io_normal) {
+		dev_warn(&pdev->dev, "Non-correctable non-fatal error reported.\n");
+		return PCI_ERS_RESULT_CAN_RECOVER;
+	}
 
 	netif_device_detach(netdev);
 

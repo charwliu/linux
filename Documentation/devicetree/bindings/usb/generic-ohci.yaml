@@ -163,7 +163,7 @@ allOf:
           minItems: 1
           maxItems: 3
 
-additionalProperties: false
+unevaluatedProperties: false
 
 examples:
   - |

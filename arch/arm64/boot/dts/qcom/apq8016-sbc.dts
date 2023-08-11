@@ -737,7 +737,6 @@
 		function = "gpio";
 
 		drive-strength = <8>;
-		input-enable;
 		bias-pull-up;
 	};
 
@@ -778,7 +777,6 @@
 		function = "gpio";
 
 		drive-strength = <8>;
-		input-enable;
 		bias-pull-up;
 	};
 };

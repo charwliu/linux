@@ -64,7 +64,6 @@ static inline psched_time_t psched_get_time(void)
 }
 
 struct qdisc_watchdog {
-	u64		last_expires;
 	struct hrtimer	timer;
 	struct Qdisc	*qdisc;
 };
@@ -135,7 +134,7 @@ extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
  */
 static inline unsigned int psched_mtu(const struct net_device *dev)
 {
-	return dev->mtu + dev->hard_header_len;
+	return READ_ONCE(dev->mtu) + dev->hard_header_len;
 }
 
 static inline struct net *qdisc_net(struct Qdisc *q)
@@ -175,6 +174,7 @@ struct tc_mqprio_qopt_offload {
 	u32 flags;
 	u64 min_rate[TC_QOPT_MAX_QUEUE];
 	u64 max_rate[TC_QOPT_MAX_QUEUE];
+	unsigned long preemptible_tcs;
 };
 
 struct tc_taprio_caps {
@@ -185,6 +185,11 @@ struct tc_taprio_caps {
 	 * INSTEAD ENFORCE A PROPER TC:TXQ MAPPING COMING FROM USER SPACE.
 	 */
 	bool broken_mqprio:1;
+};
+
+enum tc_taprio_qopt_cmd {
+	TAPRIO_CMD_REPLACE,
+	TAPRIO_CMD_DESTROY,
 };
 
 struct tc_taprio_sched_entry {
@@ -198,7 +203,7 @@ struct tc_taprio_sched_entry {
 struct tc_taprio_qopt_offload {
 	struct tc_mqprio_qopt_offload mqprio;
 	struct netlink_ext_ack *extack;
-	u8 enable;
+	enum tc_taprio_qopt_cmd cmd;
 	ktime_t base_time;
 	u64 cycle_time;
 	u64 cycle_time_extension;

@@ -587,7 +587,6 @@
 		function = "gpio";
 		bias-pull-down;
 		drive-strength = <16>;
-		input-enable;
 	};
 
 	ts_reset_sleep: ts-reset-sleep-state {
@@ -602,7 +601,6 @@
 		function = "gpio";
 		bias-pull-down;
 		drive-strength = <2>;
-		input-enable;
 	};
 
 	sde_dsi_active: sde-dsi-active-state {
