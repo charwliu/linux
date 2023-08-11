@@ -3229,7 +3229,7 @@
 	};
 
 	av1d: av1d@fdc70000 {
-		compatible = "rockchip,av1-decoder";
+		compatible = "rockchip,rk3588-av1-vpu";
 		reg = <0x0 0xfdc70000 0x0 0x800>,  <0x0 0xfdc80000 0x0 0x400>,
 		      <0x0 0xfdc90000 0x0 0x400>;
 		reg-names = "vcd", "cache", "afbc";
@@ -3237,13 +3237,13 @@
 			     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH 0>,
 			     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH 0>;
 		interrupt-names = "irq_av1d", "irq_cache", "irq_afbc";
-		clocks = <&cru ACLK_AV1>, <&cru PCLK_AV1>;
-		clock-names = "aclk_vcodec", "hclk_vcodec";
+		clocks = <&cru ACLK_AV1>, <&cru PCLK_AV1>, <&cru ACLK_VDPU_ROOT>, <&cru HCLK_VDPU_ROOT>;
+		clock-names = "aclk_vcodec", "hclk_vcodec", "aclk_vdpu_root", "hclk_vdpu_root";
 		rockchip,normal-rates = <400000000>, <400000000>;
 		assigned-clocks = <&cru ACLK_AV1>, <&cru PCLK_AV1>;
 		assigned-clock-rates = <400000000>, <400000000>;
-		resets = <&cru SRST_A_AV1>, <&cru SRST_P_AV1>;
-		reset-names = "video_a", "video_h";
+		resets = <&cru SRST_A_AV1>, <&cru SRST_P_AV1>, <&cru SRST_A_AV1_BIU>, <&cru SRST_P_AV1_BIU>;
+		reset-names = "video_a", "video_h", "aav1", "pav1";
 		iommus = <&av1d_mmu>;
 		rockchip,srv = <&mpp_srv>;
 		rockchip,taskqueue-node = <11>;
