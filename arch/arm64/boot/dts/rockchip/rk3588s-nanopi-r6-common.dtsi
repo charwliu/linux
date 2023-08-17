@@ -26,6 +26,17 @@
 
 	chosen: chosen {
 		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0 coherent_pool=1m irqchip.gicv3_pseudo_nmi=0";
+		stdout-path = "serial2:1500000n8";
+		stderr-path = "serial2:1500000n8";
+	};
+
+	mach: board {
+		compatible = "friendlyelec,board";
+		machine = "NANOPI6";
+		hwrev = <255>;
+		model = "NanoPi 6 Series";
+		nvmem-cells = <&otp_id>, <&otp_cpu_version>;
+		nvmem-cell-names = "id", "cpu-version";
 	};
 
 	hdmi0_sound: hdmi0-sound {
@@ -108,6 +119,34 @@
 		vin-supply = <&vcc5v0_usb>;
 	};
 
+	vcc5v0_host: vcc5v0-host-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_host";
+		regulator-boot-on;
+		regulator-always-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc5v0_host_en>;
+		vin-supply = <&vcc5v0_sys>;
+	};
+
+	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc3v3_pcie2x1l2";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		startup-delay-us = <5000>;
+		vin-supply = <&vcc_3v3_s3>;
+	};
+
+	pwm_backlight: pwm-backlight {
+		status = "disabled";
+		compatible = "pwm-backlight";
+	};
+
 	test-power {
 		status = "okay";
 	};
@@ -119,6 +158,13 @@
 
 &av1d_mmu {
 	status = "okay";
+};
+
+&avcc_1v8_s0 {
+	regulator-state-mem {
+		regulator-on-in-suspend;
+		regulator-suspend-microvolt = <1800000>;
+	};
 };
 
 &combphy0_ps {
@@ -144,12 +190,9 @@
 	mem-supply = <&vdd_cpu_big1_mem_s0>;
 };
 
-&gpu {
-	mali-supply = <&vdd_gpu_s0>;
-	mem-supply = <&vdd_gpu_mem_s0>;
-	upthreshold = <60>;
-	downdifferential = <30>;
-	status = "okay";
+&display_subsystem {
+	clocks = <&hdptxphy_hdmi_clk0>;
+	clock-names = "hdmi0_phy_pll";
 };
 
 &gmac1 {
@@ -171,20 +214,17 @@
 		     &gmac1_rgmii_bus>;
 
 	tx_delay = <0x42>;
-	/* rx_delay = <0x4f>; */
+	rx_delay = <0x4f>;
 
 	phy-handle = <&rgmii_phy1>;
 	status = "okay";
 };
 
-&mdio1 {
-	rgmii_phy1: phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-	};
-};
-
-&i2s5_8ch {
+&gpu {
+	mali-supply = <&vdd_gpu_s0>;
+	mem-supply = <&vdd_gpu_mem_s0>;
+	upthreshold = <60>;
+	downdifferential = <30>;
 	status = "okay";
 };
 
@@ -332,6 +372,10 @@
 	status = "disabled";
 };
 
+&i2s5_8ch {
+	status = "okay";
+};
+
 &iep {
 	status = "okay";
 };
@@ -384,6 +428,13 @@
 	status = "okay";
 };
 
+&mdio1 {
+	rgmii_phy1: phy@1 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x1>;
+	};
+};
+
 &mpp_srv {
 	status = "okay";
 };
@@ -423,6 +474,11 @@
 		usbc0_int: usbc0-int {
 			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
+
+		vcc5v0_host_en: vcc5v0-host-en {
+			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
 	};
 };
 
@@ -527,20 +583,6 @@
 	status = "okay";
 };
 
-&avcc_1v8_s0 {
-	regulator-state-mem {
-		regulator-on-in-suspend;
-		regulator-suspend-microvolt = <1800000>;
-	};
-};
-
-&vdd_log_s0 {
-	regulator-state-mem {
-		regulator-on-in-suspend;
-		regulator-suspend-microvolt = <750000>;
-	};
-};
-
 &route_hdmi0 {
 	status = "okay";
 	connect = <&vp0_out_hdmi0>;
@@ -559,6 +601,7 @@
 	max-frequency = <200000000>;
 	mmc-hs400-1_8v;
 	mmc-hs400-enhanced-strobe;
+	full-pwr-cycle-in-suspend;
 	status = "okay";
 };
 
@@ -582,6 +625,11 @@
 	status = "okay";
 };
 
+&uart2 {
+	pinctrl-0 = <&uart2m0_xfer>;
+	status = "okay";
+};
+
 &u2phy0 {
 	status = "okay";
 };
@@ -595,6 +643,8 @@
 };
 
 &u2phy2_host {
+	/* connected to USB hub, which is powered by vcc5v0_sys */
+	phy-supply = <&vcc5v0_sys>;
 	status = "okay";
 };
 
@@ -619,8 +669,9 @@
 };
 
 &usbdrd_dwc3_0 {
-	dr_mode = "host";
+	dr_mode = "otg";
 	extcon = <&u2phy0>;
+	snps,xhci-trb-ent-quirk;
 	status = "okay";
 };
 
@@ -630,6 +681,13 @@
 
 &usbhost_dwc3_0 {
 	status = "disabled";
+};
+
+&vdd_log_s0 {
+	regulator-state-mem {
+		regulator-on-in-suspend;
+		regulator-suspend-microvolt = <750000>;
+	};
 };
 
 &vdpu {
@@ -676,12 +734,6 @@
 	rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER3>;
 };
 
-&display_subsystem {
-	clocks = <&hdptxphy_hdmi_clk0>;
-	clock-names = "hdmi0_phy_pll";
-};
-
-&uart2 {
-        pinctrl-0 = <&uart2m0_xfer>;
-        status = "okay";
+&wdt {
+	status = "okay";
 };

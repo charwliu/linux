@@ -16,6 +16,7 @@
 
 	aliases {
 		ethernet0 = &r8125_u25;
+		ethernet1 = &gmac1;
 	};
 };
 
@@ -23,6 +24,11 @@
 	label = "user_led";
 };
 
+&mach {
+        hwrev = <5>;
+        model = "NanoPi R6C";
+};
+
 &pcie2x1l2 {
-	/delete-node/ pcie@40;
+	/delete-node/ pcie40@0,0;
 };
