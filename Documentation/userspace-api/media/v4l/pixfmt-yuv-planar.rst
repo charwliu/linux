@@ -392,7 +392,7 @@ Tiled NV15
 
 Semi-planar 10-bit YUV 4:2:0 formats, using 4x4 tiling.
 All components are packed without any padding between each other.
-As a side-effect, each group of 4 components are stored over 5 bytes 
+As a side-effect, each group of 4 components are stored over 5 bytes
 (YYYY or UVUV = 4 * 10 bits = 40 bits = 5 bytes).
 
 .. _V4L2-PIX-FMT-NV16:

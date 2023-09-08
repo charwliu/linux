@@ -817,20 +817,8 @@ static int dwc3_clk_enable(struct dwc3 *dwc)
 	if (ret)
 		goto disable_ref_clk;
 
-	ret = clk_prepare_enable(dwc->utmi_clk);
-	if (ret)
-		goto disable_susp_clk;
-
-	ret = clk_prepare_enable(dwc->pipe_clk);
-	if (ret)
-		goto disable_utmi_clk;
-
 	return 0;
 
-disable_utmi_clk:
-	clk_disable_unprepare(dwc->utmi_clk);
-disable_susp_clk:
-	clk_disable_unprepare(dwc->susp_clk);
 disable_ref_clk:
 	clk_disable_unprepare(dwc->ref_clk);
 disable_bus_clk:
@@ -840,8 +828,6 @@ disable_bus_clk:
 
 static void dwc3_clk_disable(struct dwc3 *dwc)
 {
-	clk_disable_unprepare(dwc->pipe_clk);
-	clk_disable_unprepare(dwc->utmi_clk);
 	clk_disable_unprepare(dwc->susp_clk);
 	clk_disable_unprepare(dwc->ref_clk);
 	clk_disable_unprepare(dwc->bus_clk);
@@ -1762,18 +1748,6 @@ static int dwc3_get_clocks(struct dwc3 *dwc)
 		}
 	}
 
-	dwc->utmi_clk = devm_clk_get_optional(dev, "utmi");
-	if (IS_ERR(dwc->utmi_clk)) {
-		return dev_err_probe(dev, PTR_ERR(dwc->utmi_clk),
-				"could not get utmi clock\n");
-	}
-
-	dwc->pipe_clk = devm_clk_get_optional(dev, "pipe");
-	if (IS_ERR(dwc->pipe_clk)) {
-		return dev_err_probe(dev, PTR_ERR(dwc->pipe_clk),
-				"could not get pipe clock\n");
-	}
-
 	return 0;
 }
 
@@ -1809,6 +1783,17 @@ static int dwc3_probe(struct platform_device *pdev)
 	 */
 	dwc_res = *res;
 	dwc_res.start += DWC3_GLOBALS_REGS_START;
+
+	if (dev->of_node) {
+		struct device_node *parent = of_get_parent(dev->of_node);
+
+		if (of_device_is_compatible(parent, "realtek,rtd-dwc3")) {
+			dwc_res.start -= DWC3_GLOBALS_REGS_START;
+			dwc_res.start += DWC3_RTK_RTD_GLOBALS_REGS_START;
+		}
+
+		of_node_put(parent);
+	}
 
 	regs = devm_ioremap_resource(dev, &dwc_res);
 	if (IS_ERR(regs))
@@ -1923,7 +1908,7 @@ err_put_psy:
 	return ret;
 }
 
-static int dwc3_remove(struct platform_device *pdev)
+static void dwc3_remove(struct platform_device *pdev)
 {
 	struct dwc3	*dwc = platform_get_drvdata(pdev);
 
@@ -1950,8 +1935,6 @@ static int dwc3_remove(struct platform_device *pdev)
 
 	if (dwc->usb_psy)
 		power_supply_put(dwc->usb_psy);
-
-	return 0;
 }
 
 #ifdef CONFIG_PM
@@ -2262,7 +2245,7 @@ MODULE_DEVICE_TABLE(acpi, dwc3_acpi_match);
 
 static struct platform_driver dwc3_driver = {
 	.probe		= dwc3_probe,
-	.remove		= dwc3_remove,
+	.remove_new	= dwc3_remove,
 	.driver		= {
 		.name	= "dwc3",
 		.of_match_table	= of_match_ptr(of_dwc3_match),

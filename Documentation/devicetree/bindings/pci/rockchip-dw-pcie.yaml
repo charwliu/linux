@@ -60,33 +60,6 @@ properties:
       - const: aux
       - const: pipe
 
-  interrupts:
-    maxItems: 5
-
-  interrupt-names:
-    items:
-      - const: sys
-      - const: pmc
-      - const: msg
-      - const: legacy
-      - const: err
-
-  legacy-interrupt-controller:
-    description: Interrupt controller node for handling legacy PCI interrupts.
-    type: object
-    properties:
-      "#address-cells":
-        const: 0
-
-      "#interrupt-cells":
-        const: 1
-
-      "interrupt-controller": true
-
-      interrupts:
-        items:
-          - description: combined legacy interrupt
-
   msi-map: true
 
   num-lanes: true
@@ -135,7 +108,6 @@ unevaluatedProperties: false
 
 examples:
   - |
-    #include <dt-bindings/interrupt-controller/arm-gic.h>
 
     bus {
         #address-cells = <2>;
@@ -155,12 +127,6 @@ examples:
                           "aclk_dbi", "pclk",
                           "aux";
             device_type = "pci";
-            interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
-                         <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>,
-                         <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
-                         <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
-                         <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
-            interrupt-names = "sys", "pmc", "msg", "legacy", "err";
             linux,pci-domain = <2>;
             max-link-speed = <2>;
             msi-map = <0x2000 &its 0x2000 0x1000>;
@@ -174,14 +140,6 @@ examples:
             reset-names = "pipe";
             #address-cells = <3>;
             #size-cells = <2>;
-
-            legacy-interrupt-controller {
-                interrupt-controller;
-                #address-cells = <0>;
-                #interrupt-cells = <1>;
-                interrupt-parent = <&gic>;
-                interrupts = <GIC_SPI 72 IRQ_TYPE_EDGE_RISING>;
-            };
         };
     };
 ...

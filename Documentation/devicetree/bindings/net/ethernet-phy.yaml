@@ -93,10 +93,6 @@ properties:
       the turn around line low at end of the control phase of the
       MDIO transaction.
 
-  clock-names:
-    items:
-      - const: xtal
-
   clocks:
     maxItems: 1
     description:

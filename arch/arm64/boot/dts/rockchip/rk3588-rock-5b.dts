@@ -127,6 +127,22 @@
 	mem-supply = <&vdd_cpu_lit_mem_s0>;
 };
 
+&cpu_l0 {
+	cpu-supply = <&vdd_cpu_lit_s0>;
+};
+
+&cpu_l1 {
+	cpu-supply = <&vdd_cpu_lit_s0>;
+};
+
+&cpu_l2 {
+	cpu-supply = <&vdd_cpu_lit_s0>;
+};
+
+&cpu_l3 {
+	cpu-supply = <&vdd_cpu_lit_s0>;
+};
+
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0m2_xfer>;
@@ -240,8 +256,8 @@
 };
 
 &saradc {
-	status = "okay";
 	vref-supply = <&avcc_1v8_s0>;
+	status = "okay";
 };
 
 &sdhci {

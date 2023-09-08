@@ -4506,7 +4506,7 @@
 
 	sdio: mmc@fe2d0000 {
 		compatible = "rockchip,rk3588-dw-mshc", "rockchip,rk3288-dw-mshc";
-		reg = <0x0 0xfe2d0000 0x0 0x4000>;
+		reg = <0x00 0xfe2d0000 0x00 0x4000>;
 		interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_HIGH 0>;
 		clocks = <&cru HCLK_SDIO>, <&cru CCLK_SRC_SDIO>,
 			 <&cru SCLK_SDIO_DRV>, <&cru SCLK_SDIO_SAMPLE>;
@@ -4530,6 +4530,9 @@
 			 <&cru TMCLK_EMMC>;
 		clock-names = "core", "bus", "axi", "block", "timer";
 		max-frequency = <200000000>;
+		pinctrl-0 = <&emmc_rstnout>, <&emmc_bus8>, <&emmc_clk>,
+			    <&emmc_cmd>, <&emmc_data_strobe>;
+		pinctrl-names = "default";
 		resets = <&cru SRST_C_EMMC>, <&cru SRST_H_EMMC>,
 			 <&cru SRST_A_EMMC>, <&cru SRST_B_EMMC>,
 			 <&cru SRST_T_EMMC>;
@@ -4782,16 +4785,16 @@
 
 		its0: msi-controller@fe640000 {
 			compatible = "arm,gic-v3-its";
+			reg = <0x0 0xfe640000 0x0 0x20000>;
 			msi-controller;
 			#msi-cells = <1>;
-			reg = <0x0 0xfe640000 0x0 0x20000>;
 		};
 
 		its1: msi-controller@fe660000 {
 			compatible = "arm,gic-v3-its";
+			reg = <0x0 0xfe660000 0x0 0x20000>;
 			msi-controller;
 			#msi-cells = <1>;
-			reg = <0x0 0xfe660000 0x0 0x20000>;
 		};
 
 		ppi-partitions {
@@ -4948,7 +4951,7 @@
 		status = "disabled";
 	};
 
-	rktimer: timer@feae0000 {
+	timer0: timer@feae0000 {
 		compatible = "rockchip,rk3588-timer", "rockchip,rk3288-timer";
 		reg = <0x0 0xfeae0000 0x0 0x20>;
 		interrupts = <GIC_SPI 289 IRQ_TYPE_LEVEL_HIGH 0>;
@@ -5356,6 +5359,18 @@
 		status = "disabled";
 	};
 
+	saradc: adc@fec10000 {
+		compatible = "rockchip,rk3588-saradc";
+		reg = <0x0 0xfec10000 0x0 0x10000>;
+		interrupts = <GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH 0>;
+		#io-channel-cells = <1>;
+		clocks = <&cru CLK_SARADC>, <&cru PCLK_SARADC>;
+		clock-names = "saradc", "apb_pclk";
+		resets = <&cru SRST_P_SARADC>;
+		reset-names = "saradc-apb";
+		status = "disabled";
+	};
+
 	i2c6: i2c@fec80000 {
 		compatible = "rockchip,rk3588-i2c", "rockchip,rk3399-i2c";
 		reg = <0x0 0xfec80000 0x0 0x1000>;
@@ -5431,11 +5446,6 @@
 			reg = <0x07 0x10>;
 		};
 
-		otp_cpu_version: cpu-version@1c {
-			reg = <0x1c 0x1>;
-			bits = <3 3>;
-		};
-
 		cpub0_leakage: cpu-leakage@17 {
 			reg = <0x17 0x1>;
 		};
@@ -5454,6 +5464,11 @@
 
 		gpu_leakage: gpu-leakage@1b {
 			reg = <0x1b 0x1>;
+		};
+
+		otp_cpu_version: cpu-version@1c {
+			reg = <0x1c 0x1>;
+			bits = <3 3>;
 		};
 
 		npu_leakage: npu-leakage@28 {

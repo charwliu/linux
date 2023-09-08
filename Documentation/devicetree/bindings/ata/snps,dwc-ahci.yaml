@@ -13,6 +13,18 @@ description:
   This document defines device tree bindings for the generic Synopsys DWC
   implementation of the AHCI SATA controller.
 
+select:
+  properties:
+    compatible:
+      enum:
+        - snps,dwc-ahci
+        - snps,spear-ahci
+  required:
+    - compatible
+
+allOf:
+  - $ref: snps,dwc-ahci-common.yaml#
+
 properties:
   compatible:
     oneOf:
@@ -20,12 +32,6 @@ properties:
         const: snps,dwc-ahci
       - description: SPEAr1340 AHCI SATA device
         const: snps,spear-ahci
-      - description: Rockhip AHCI controller
-        items:
-          - enum:
-              - rockchip,rk3568-dwc-ahci
-              - rockchip,rk3588-dwc-ahci
-          - const: snps,dwc-ahci
 
 patternProperties:
   "^sata-port@[0-9a-e]$":
@@ -37,37 +43,6 @@ required:
   - compatible
   - reg
   - interrupts
-
-allOf:
-  - $ref: snps,dwc-ahci-common.yaml#
-  - if:
-      properties:
-        compatible:
-          contains:
-            enum:
-              - rockchip,rk3588-dwc-ahci
-    then:
-      properties:
-        clock-names:
-          items:
-            - const: sata
-            - const: pmalive
-            - const: rxoob
-            - const: ref
-            - const: asic
-  - if:
-      properties:
-        compatible:
-          contains:
-            enum:
-              - rockchip,rk3568-dwc-ahci
-    then:
-      properties:
-        clock-names:
-          items:
-            - const: sata
-            - const: pmalive
-            - const: rxoob
 
 unevaluatedProperties: false
 

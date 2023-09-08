@@ -28,9 +28,6 @@ properties:
               - rockchip,rk3588-sys-grf
               - rockchip,rk3588-pcie3-phy-grf
               - rockchip,rk3588-pcie3-pipe-grf
-              - rockchip,rk3588-usb-grf
-              - rockchip,rk3588-usbdpphy-grf
-              - rockchip,rk3588-vo-grf
               - rockchip,rv1108-usbgrf
           - const: syscon
       - items:
@@ -65,9 +62,6 @@ properties:
           - const: simple-mfd
 
   reg:
-    maxItems: 1
-
-  clocks:
     maxItems: 1
 
   "#address-cells":
@@ -127,7 +121,7 @@ allOf:
         usbphy:
           type: object
 
-          $ref: "/schemas/phy/rockchip-usb-phy.yaml#"
+          $ref: /schemas/phy/rockchip-usb-phy.yaml#
 
           unevaluatedProperties: false
 
@@ -142,14 +136,14 @@ allOf:
         gpio:
           type: object
 
-          $ref: "/schemas/gpio/rockchip,rk3328-grf-gpio.yaml#"
+          $ref: /schemas/gpio/rockchip,rk3328-grf-gpio.yaml#
 
           unevaluatedProperties: false
 
         power-controller:
           type: object
 
-          $ref: "/schemas/power/rockchip,power-controller.yaml#"
+          $ref: /schemas/power/rockchip,power-controller.yaml#
 
           unevaluatedProperties: false
 
@@ -164,7 +158,7 @@ allOf:
         mipi-dphy-rx0:
           type: object
 
-          $ref: "/schemas/phy/rockchip-mipi-dphy-rx0.yaml#"
+          $ref: /schemas/phy/rockchip-mipi-dphy-rx0.yaml#
 
           unevaluatedProperties: false
 
@@ -192,7 +186,7 @@ allOf:
         reboot-mode:
           type: object
 
-          $ref: "/schemas/power/reset/syscon-reboot-mode.yaml#"
+          $ref: /schemas/power/reset/syscon-reboot-mode.yaml#
 
           unevaluatedProperties: false
 
@@ -247,25 +241,9 @@ allOf:
         io-domains:
           type: object
 
-          $ref: "/schemas/power/rockchip-io-domain.yaml#"
+          $ref: /schemas/power/rockchip-io-domain.yaml#
 
           unevaluatedProperties: false
-
-  - if:
-      properties:
-        compatible:
-          contains:
-            enum:
-              - rockchip,rk3588-vo-grf
-
-    then:
-      required:
-        - clocks
-
-    else:
-      properties:
-        clocks: false
-
 
 examples:
   - |
