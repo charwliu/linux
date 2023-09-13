@@ -110,3 +110,15 @@
 		};
 	};
 };
+
+&pwm0 {
+	status = "disabled";
+};
+
+&sata2 {
+	status = "disabled";
+};
+
+&sfc {
+	status = "disabled";
+};
