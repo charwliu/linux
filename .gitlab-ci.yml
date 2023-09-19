@@ -44,6 +44,11 @@ stages:
     - ccache -s
   script:
     - make $DEFCONFIG
+    - ./scripts/config -e WLAN -e WLAN_VENDOR_BROADCOM -m BRCMUTIL -m BRCMFMAC
+                       -e BRCMFMAC_PROTO_BCDC -e BRCMFMAC_PROTO_MSGBUF
+                       -e BRCMFMAC_USB
+                       -e WLAN_VENDOR_REALTEK -m RTW89 -m RTW89_CORE
+                       -m RTW89_PCI -m RTW89_8825B -m RTW89_8852BE
     - make -j$(nproc) $ADDITIONAL_BUILD_CMD bindeb-pkg
     - mkdir artifacts && dcmd mv ../*.changes artifacts/
   artifacts:
