@@ -673,11 +673,7 @@
 	status = "okay";
 };
 
-&usbdrd3_0 {
-	status = "okay";
-};
-
-&usbdrd_dwc3_0 {
+&usb_host0_xhci {
 	dr_mode = "otg";
 	usb-role-switch;
 	status = "okay";

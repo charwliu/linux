@@ -570,6 +570,9 @@
 		linux,pci-domain = <0>;
 		max-link-speed = <3>;
 		msi-map = <0x0000 &its1 0x0000 0x1000>;
+		num-ib-windows = <16>;
+		num-ob-windows = <16>;
+		num-viewport = <8>;
 		num-lanes = <4>;
 		phys = <&pcie30phy>;
 		phy-names = "pcie-phy";
@@ -582,7 +585,7 @@
 		      <0x0 0xf0000000 0x0 0x00100000>;
 		reg-names = "apb", "dbi", "config";
 		resets = <&cru SRST_PCIE0_POWER_UP>, <&cru SRST_P_PCIE0>;
-		reset-names = "pcie", "periph";
+		reset-names = "pwr", "pipe";
 		status = "disabled";
 
 		pcie3x4_intc: legacy-interrupt-controller {
@@ -633,7 +636,7 @@
 		      <0x0 0xf1000000 0x0 0x00100000>;
 		reg-names = "apb", "dbi", "config";
 		resets = <&cru SRST_PCIE1_POWER_UP>, <&cru SRST_P_PCIE1>;
-		reset-names = "pcie", "periph";
+		reset-names = "pwr", "pipe";
 		status = "disabled";
 
 		pcie3x2_intc: legacy-interrupt-controller {
@@ -670,9 +673,6 @@
 				<0 0 0 3 &pcie2x1l0_intc 2>,
 				<0 0 0 4 &pcie2x1l0_intc 3>;
 		linux,pci-domain = <2>;
-		num-ib-windows = <8>;
-		num-ob-windows = <8>;
-		num-viewport = <4>;
 		max-link-speed = <2>;
 		msi-map = <0x2000 &its0 0x2000 0x1000>;
 		num-lanes = <1>;
@@ -681,7 +681,7 @@
 		power-domains = <&power RK3588_PD_PCIE>;
 		ranges = <0x01000000 0x0 0xf2100000 0x0 0xf2100000 0x0 0x00100000>,
 			 <0x02000000 0x0 0xf2200000 0x0 0xf2200000 0x0 0x00e00000>,
-			 <0x03000000 0x9 0x80000000 0x9 0x80000000 0x0 0x40000000>;
+			 <0x03000000 0x0 0x40000000 0x9 0x80000000 0x0 0x40000000>;
 		reg = <0x0 0xfe170000 0x0 0x00010000>,
 		      <0xa 0x40800000 0x0 0x00400000>,
 		      <0x0 0xf2000000 0x0 0x00100000>;
@@ -751,11 +751,11 @@
 	sata1: sata@fe220000 {
 		compatible = "rockchip,rk3588-dwc-ahci", "snps,dwc-ahci";
 		reg = <0 0xfe220000 0 0x1000>;
+		interrupts = <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH 0>;
 		clocks = <&cru ACLK_SATA1>, <&cru CLK_PMALIVE1>,
 			 <&cru CLK_RXOOB1>, <&cru CLK_PIPEPHY1_REF>,
 			 <&cru CLK_PIPEPHY1_PIPE_ASIC_G>;
 		clock-names = "sata", "pmalive", "rxoob", "ref", "asic";
-		interrupts = <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH 0>;
 		ports-implemented = <0x1>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -851,17 +851,16 @@
 	combphy1_ps: phy@fee10000 {
 		compatible = "rockchip,rk3588-naneng-combphy";
 		reg = <0x0 0xfee10000 0x0 0x100>;
-		#phy-cells = <1>;
 		clocks = <&cru CLK_REF_PIPE_PHY1>, <&cru PCLK_PCIE_COMBO_PIPE_PHY1>,
 			 <&cru PCLK_PHP_ROOT>;
 		clock-names = "ref", "apb", "pipe";
 		assigned-clocks = <&cru CLK_REF_PIPE_PHY1>;
 		assigned-clock-rates = <100000000>;
+		#phy-cells = <1>;
 		resets = <&cru SRST_REF_PIPE_PHY1>, <&cru SRST_P_PCIE2_PHY1>;
 		reset-names = "phy", "apb";
 		rockchip,pipe-grf = <&php_grf>;
 		rockchip,pipe-phy-grf = <&pipe_phy1_grf>;
-		rockchip,pcie1ln-sel-bits = <0x100 0 0 0>;
 		status = "disabled";
 	};
 

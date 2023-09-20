@@ -119,20 +119,6 @@
 		vin-supply = <&vcc5v0_usb>;
 	};
 
-	vcc5v0_host: vcc5v0-host-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc5v0_host";
-		regulator-boot-on;
-		regulator-always-on;
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		enable-active-high;
-		gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc5v0_host_en>;
-		vin-supply = <&vcc5v0_sys>;
-	};
-
 	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc3v3_pcie2x1l2";
@@ -664,22 +650,14 @@
 	status = "okay";
 };
 
-&usbdrd3_0 {
-	status = "okay";
-};
-
-&usbdrd_dwc3_0 {
+&usb_host0_xhci {
 	dr_mode = "otg";
 	extcon = <&u2phy0>;
 	snps,xhci-trb-ent-quirk;
 	status = "okay";
 };
 
-&usbhost3_0 {
-	status = "disabled";
-};
-
-&usbhost_dwc3_0 {
+&usb_host2_xhci {
 	status = "disabled";
 };
 
