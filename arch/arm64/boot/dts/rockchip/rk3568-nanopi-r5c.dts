@@ -35,6 +35,7 @@
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_LAN;
 			gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "r8169-1-100:00:link";
 		};
 
 		power_led: led-power {
@@ -48,6 +49,7 @@
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_WAN;
 			gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "r8169-2-100:00:link";
 		};
 
 		led-wlan {

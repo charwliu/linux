@@ -27,6 +27,7 @@
 			function = LED_FUNCTION_LAN;
 			function-enumerator = <1>;
 			gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "r8169-0-100:00:link";
 		};
 
 		led-lan2 {
@@ -34,6 +35,7 @@
 			function = LED_FUNCTION_LAN;
 			function-enumerator = <2>;
 			gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "r8169-1-100:00:link";
 		};
 
 		power_led: led-power {
@@ -47,6 +49,7 @@
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_WAN;
 			gpios = <&gpio2 RK_PC1 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "stmmac-0:01:link";
 		};
 	};
 };
