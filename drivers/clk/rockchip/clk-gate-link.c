@@ -16,10 +16,14 @@
  *
  * @gate: handle clk gate
  * @link: links clk
+ * @enabled: enabled through SW
+ * @prepared: prepared through SW
  */
 struct clk_gate_link {
 	struct clk_gate gate;
 	struct clk	*link;
+	bool            enabled;
+	bool            prepared;
 };
 
 #define to_clk_gate_link(_gate) container_of(_gate, struct clk_gate_link, gate)
@@ -30,6 +34,7 @@ static int clk_gate_link_enable(struct clk_hw *hw)
 
 	clk_gate_endisable(hw, 1);
 	clk_enable(gate->link);
+	gate->enabled = true;
 
 	return 0;
 }
@@ -39,7 +44,9 @@ static void clk_gate_link_disable(struct clk_hw *hw)
 	struct clk_gate_link *gate = to_clk_gate_link(to_clk_gate(hw));
 
 	clk_gate_endisable(hw, 0);
-	clk_disable(gate->link);
+	if (gate->enabled)
+		clk_disable(gate->link);
+	gate->enabled = false;
 }
 
 static int clk_gate_link_is_enabled(struct clk_hw *hw)
@@ -49,16 +56,24 @@ static int clk_gate_link_is_enabled(struct clk_hw *hw)
 
 static int clk_gate_link_prepare(struct clk_hw *hw)
 {
+	int ret;
+
 	struct clk_gate_link *gate = to_clk_gate_link(to_clk_gate(hw));
 
-	return clk_prepare(gate->link);
+	ret = clk_prepare(gate->link);
+	if (ret == 0)
+		gate->prepared = true;
+
+	return ret;
 }
 
 static void clk_gate_link_unprepare(struct clk_hw *hw)
 {
 	struct clk_gate_link *gate = to_clk_gate_link(to_clk_gate(hw));
 
-	clk_unprepare(gate->link);
+	if (gate->prepared)
+		clk_unprepare(gate->link);
+	gate->prepared = false;
 }
 
 const struct clk_ops clk_gate_link_ops = {
@@ -94,6 +109,8 @@ struct clk *rockchip_clk_register_gate_link(struct rockchip_clk_provider *ctx,
 
 	clks = ctx->clk_data.clks;
 	gate_link->link = clks[link_id];
+	gate_link->enabled = false;
+	gate_link->prepared = false;
 
 	init.name = name;
 	init.ops = &clk_gate_link_ops;
