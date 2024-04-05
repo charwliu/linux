@@ -430,6 +430,16 @@
 		rockchip,usbdpphy-grf = <&usbdpphy1_grf>;
 		rockchip,vo-grf = <&vo0_grf>;
 		status = "disabled";
+
+		usbdp_phy1_dp: dp-port {
+			#phy-cells = <0>;
+			status = "disabled";
+		};
+
+		usbdp_phy1_u3: usb3-port {
+			#phy-cells = <0>;
+			status = "disabled";
+		};
 	};
 
 	combphy1_ps: phy@fee10000 {
