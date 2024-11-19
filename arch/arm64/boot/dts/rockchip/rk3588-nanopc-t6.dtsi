@@ -15,11 +15,13 @@
 
 / {
 	model = "FriendlyElec NanoPC-T6";
-	compatible = "friendlyarm,nanopc-t6", "rockchip,rk3588";
+	compatible = "friendlyelec,nanopc-t6", "rockchip,rk3588";
 
 	aliases {
 		mmc0 = &sdhci;
 		mmc1 = &sdmmc;
+		ethernet0 = &r8125_u10;
+		ethernet1 = &r8125_u12;
 	};
 
 	adc-keys-0 {
@@ -52,7 +54,7 @@
 
 		sys_led: led-0 {
 			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
-			label = "system-led";
+			label = "sys_led";
 			linux,default-trigger = "heartbeat";
 			pinctrl-names = "default";
 			pinctrl-0 = <&sys_led_pin>;
@@ -60,7 +62,7 @@
 
 		usr_led: led-1 {
 			gpios = <&gpio2 RK_PC0 GPIO_ACTIVE_HIGH>;
-			label = "user-led";
+			label = "usr_led";
 			pinctrl-names = "default";
 			pinctrl-0 = <&usr_led_pin>;
 		};
@@ -491,6 +493,17 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie2_0_rst>;
 	status = "okay";
+
+	pcie20@0,0 {
+		reg = <0x00200000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u12: pcie20@0,0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
 };
 
 &pcie2x1l1 {
@@ -507,6 +520,17 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie2_2_rst>;
 	status = "okay";
+
+	pcie40@0,0 {
+		reg = <0x00400000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u10: pcie40@0,0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
 };
 
 &pcie30phy {
@@ -970,6 +994,15 @@
 };
 
 &u2phy0_otg {
+	rockchip,typec-vbus-det;
+	status = "okay";
+};
+
+&u2phy1 {
+	status = "okay";
+};
+
+&u2phy1_otg {
 	status = "okay";
 };
 
@@ -977,11 +1010,11 @@
 	status = "okay";
 };
 
-&u2phy3_host {
+&u2phy2 {
 	status = "okay";
 };
 
-&u2phy2 {
+&u2phy3_host {
 	status = "okay";
 };
 
