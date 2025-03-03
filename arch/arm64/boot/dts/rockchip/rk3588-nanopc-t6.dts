@@ -12,7 +12,7 @@
 
 / {
 	model = "FriendlyElec NanoPC-T6";
-	compatible = "friendlyarm,nanopc-t6", "rockchip,rk3588";
+	compatible = "friendlyelec,nanopc-t6", "rockchip,rk3588";
 
 	vdd_4g_3v3: regulator-vdd-4g-3v3 {
 		compatible = "regulator-fixed";
