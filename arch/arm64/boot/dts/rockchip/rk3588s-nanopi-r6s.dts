@@ -6,7 +6,7 @@
 
 / {
 	model = "FriendlyElec NanoPi R6S";
-	compatible = "friendlyarm,nanopi-r6s", "rockchip,rk3588s";
+	compatible = "friendlyelec,nanopi-r6s", "rockchip,rk3588s";
 };
 
 &lan2_led {
