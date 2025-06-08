@@ -38,3 +38,21 @@
 &u2phy2_host {
 	phy-supply = <&vdd_4g_3v3>;
 };
+
+
+&u2phy1 {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "okay";
+};
+
+&usbdp_phy1 {
+	status = "okay";
+};
+
+&usb_host1_xhci {
+	dr_mode = "host";
+	status = "okay";
+};
