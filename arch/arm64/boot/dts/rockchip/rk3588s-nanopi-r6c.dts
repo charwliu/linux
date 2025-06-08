@@ -7,8 +7,17 @@
 / {
 	model = "FriendlyElec NanoPi R6C";
 	compatible = "friendlyarm,nanopi-r6c", "rockchip,rk3588s";
+
+	aliases {
+		ethernet0 = &r8125_u25;
+		ethernet1 = &gmac1;
+	};
 };
 
 &lan2_led {
 	label = "user_led";
+};
+
+&pcie2x1l2 {
+	/delete-node/ pcie40@0,0;
 };
