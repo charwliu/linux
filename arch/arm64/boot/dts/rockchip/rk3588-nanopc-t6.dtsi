@@ -21,6 +21,8 @@
 	aliases {
 		mmc0 = &sdhci;
 		mmc1 = &sdmmc;
+		ethernet0 = &r8125_u10;
+		ethernet1 = &r8125_u12;
 	};
 
 	adc-keys-0 {
@@ -586,6 +588,17 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie2_0_rst>;
 	status = "okay";
+
+	pcie20@0,0 {
+		reg = <0x00200000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u12: pcie20@0,0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
 };
 
 &pcie2x1l1 {
@@ -594,6 +607,17 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie2_1_rst>;
 	status = "okay";
+
+	pcie40@0,0 {
+		reg = <0x00400000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u10: pcie40@0,0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
 };
 
 &pcie2x1l2 {

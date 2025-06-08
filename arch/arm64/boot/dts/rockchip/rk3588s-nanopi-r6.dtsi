@@ -10,7 +10,6 @@
 
 / {
 	aliases {
-		ethernet0 = &gmac1;
 		mmc0 = &sdmmc;
 		mmc1 = &sdhci;
 	};
@@ -351,12 +350,34 @@
 	reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc_3v3_pcie20>;
 	status = "okay";
+
+	pcie30@0,0 {
+		reg = <0x00300000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u25: pcie30@0,0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
 };
 
 &pcie2x1l2 {
 	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc_3v3_pcie20>;
 	status = "okay";
+
+	pcie40@0,0 {
+		reg = <0x00400000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		r8125_u40: pcie40@0,0,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+	};
 };
 
 &pd_gpu {
@@ -419,6 +440,10 @@
 			rockchip,pins = <3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
+};
+
+&rng {
+	status = "okay";
 };
 
 &saradc {
